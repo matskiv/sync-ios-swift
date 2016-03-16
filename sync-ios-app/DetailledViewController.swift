@@ -1,0 +1,72 @@
+/*
+* Copyright Red Hat, Inc., and individual contributors
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import UIKit
+import FeedHenry
+
+public class DetailledViewController: UIViewController {
+    var item: ShoppingItem!
+    var action: String!
+    var dataManager: DataManager!
+    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var createdTextField: UITextField!
+    @IBOutlet weak var createdLabel: UILabel!
+    
+    public var isUpdate: Bool {
+        if let uid = item["uid"], let uidString = uid as? String where uidString != "" {
+            print("UID \(uidString)")
+            return true
+        }
+        return false
+    }
+    public override func viewDidLoad() {
+        if let item = item {
+            self.nameTextField.text = item["name"] as? String
+            if isUpdate { // update
+                self.createdLabel.hidden = false
+                self.createdTextField.hidden = false
+                //self.createdTextField.text = [dateFormatter stringFromDate:_item.created];
+            } else { // create
+                self.createdLabel.hidden = true
+                self.createdTextField.hidden = true
+                //self.createdTextField.text = ""
+            }
+        }
+    }
+    @IBAction func saveItem(sender: AnyObject) {
+        if let name = self.nameTextField.text where name != "" {
+            item["name"] = name
+            isUpdate ? dataManager.updateItem(item) : dataManager.createItem(item)
+        } else {
+            displayError("Name is required")
+        }
+        let parent = self.parentViewController as? UINavigationController
+        parent?.popViewControllerAnimated(true)
+    }
+    
+    @IBAction func cancel(sender: AnyObject) {
+        if let parent = self.parentViewController as? UINavigationController {
+            parent.popViewControllerAnimated(true)
+        }
+    }
+    
+    func displayError(error: String) {
+        let alert = UIAlertController(title: error, message: nil, preferredStyle: .Alert)
+        let okAction = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+}
