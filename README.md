@@ -1,8 +1,8 @@
-# sync-ios-app [![Build Status](https://travis-ci.org/feedhenry-templates/sync-ios-app.png)](https://travis-ci.org/feedhenry-templates/sync-ios-app)
+# sync-ios-swift [![Build Status](https://travis-ci.org/feedhenry-templates/sync-ios-swift.png)](https://travis-ci.org/feedhenry-templates/sync-ios-swift)
 
 Author: Corinne Krych   
 Level: Intermediate  
-Technologies: Objective-C, iOS, RHMAP, CocoaPods. 
+Technologies: Swift, iOS, RHMAP, CocoaPods. 
 Summary: A demonstration of how to synchronize a single collection with RHMAP. 
 Community Project : [Feed Henry](http://feedhenry.org) 
 Target Product: RHMAP  
@@ -12,7 +12,7 @@ Prerequisites: fh-ios-sdk : 3.+, Xcode : 7.2+, iOS SDK : iOS7+, CocoaPods: 0.39+
 
 ## What is it?
 
-This application manages items in a collection that is synchronized with a remote RHMAP cloud application.  The user can create, update, and delete collection items.  Refer to [SyncApp/fhconfig.plist](SyncApp/fhconfig.plist) for the delevant pieces of code and configuraiton.
+This application manages items in a collection that is synchronized with a remote RHMAP cloud application.  The user can create, update, and delete collection items.  Refer to [sync-ios-app/fhconfig.plist](sync-ios-app/fhconfig.plist) for the delevant pieces of code and configuraiton.
 
 If you do not have access to a RHMAP instance, you can sign up for a free instance at [https://openshift.feedhenry.com/](https://openshift.feedhenry.com/).
 
@@ -29,11 +29,11 @@ If you wish to contribute to this template, the following information may be hel
 
 1. Clone this project
 
-2. Populate ```SyncApp/fhconfig.plist``` with your values as explained [here](http://docs.feedhenry.com/v3/dev_tools/sdks/ios.html#ios-configure).
+2. Populate ```sync-ios-app/fhconfig.plist``` with your values as explained [here](http://docs.feedhenry.com/v3/dev_tools/sdks/ios.html#ios-configure).
 
 3. Run ```pod install``` 
 
-4. Open SyncApp.xcworkspace
+4. Open sync-ios-app.xcworkspace
 
 5. Run the project
  
@@ -41,17 +41,18 @@ If you wish to contribute to this template, the following information may be hel
 
 ### Start synchronization
 
-In ```SyncApp/DataManager.m``` the synchronization loop is started.
+In ```sync-ios-app/DataManager.swift``` the synchronization loop is started.
 ```
-    FHSyncConfig* conf = [[FHSyncConfig alloc] init];
-    conf.syncFrequency = 30;
-    conf.notifySyncStarted = YES;
-    conf.notifySyncCompleted = YES;
+    let conf = FHSyncConfig()
+    conf.syncFrequency = 30
+    conf.notifySyncStarted = true
+    conf.notifySyncCompleted = true
     ...
-     FHSyncClient* syncClient = [FHSyncClient getInstance];
-    [syncClient initWithConfig:conf];   // [1]
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onSyncMessage:) name:kFHSyncStateChangedNotification object:nil]; // [2]
-    [syncClient manageWithDataId:@"shoopingList" AndConfig:nil AndQuery:[NSDictionary dictionary]];  // [3]
+    let syncClient = FHSyncClient(config: conf) // [1]
+    NSNotificationCenter.defaultCenter().addObserver(self, 
+             selector:Selector("onSyncMessage:"), name:"kFHSyncStateChangedNotification", 
+             object:nil) // [2]
+    syncClient.manageWithDataId(DATA_ID, andConfig:nil, andQuery:[:]) // [3]
 ```
 [1] Initialize with sync configuration.
 
@@ -60,17 +61,16 @@ In ```SyncApp/DataManager.m``` the synchronization loop is started.
 [3] Initialize a sync client for a given dataset.
 
 ### Listening to sync notification to hook in 
-In ```SyncApp/DataManager.m``` the method ```onSyncMessage``` is your callback method on sync events.
+In ```sync-ios-app/DataManager.swift``` the method ```onSyncMessage``` is your callback method on sync events.
 
 ```
-- (void) onSyncMessage:(NSNotification*) note
-{
-    FHSyncNotificationMessage* msg = (FHSyncNotificationMessage*) [note object];
-
-    if([msg.code isEqualToString:REMOTE_UPDATE_APPLIED_MESSAGE]) {
-        // Add UI / business code
+public func onSyncMessage(note: NSNotification) {
+    if let msg = note.object as? FHSyncNotificationMessage, 
+       let code = msg.code {
+        print("Got notification: \(msg)")
+        if code == REMOTE_UPDATE_APPLIED_MESSAGE { 
+            // Add UI / business code
+        }
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kAppDataUpdatedNotification object:nil];
 }
 ```
