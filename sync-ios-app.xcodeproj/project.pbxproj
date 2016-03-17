@@ -16,6 +16,9 @@
 		4840C9ED1C96F40C00140354 /* sync_ios_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4840C9EC1C96F40C00140354 /* sync_ios_appTests.swift */; };
 		4840C9F81C96F40C00140354 /* sync_ios_appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4840C9F71C96F40C00140354 /* sync_ios_appUITests.swift */; };
 		485B22B41C9964CF00738FC2 /* DetailledViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485B22B31C9964CF00738FC2 /* DetailledViewController.swift */; };
+		48D808191C9AA644001D51FE /* ShoppingItem.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48D808171C9AA644001D51FE /* ShoppingItem.xcdatamodeld */; };
+		48D8081C1C9AA9C4001D51FE /* ShoppingItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8081A1C9AA9C4001D51FE /* ShoppingItem+CoreDataProperties.swift */; };
+		48D8081D1C9AA9C4001D51FE /* ShoppingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D8081B1C9AA9C4001D51FE /* ShoppingItem.swift */; };
 		48EB8A0F1C994A1D00B1C414 /* fhconfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 48EB8A0E1C994A1D00B1C414 /* fhconfig.plist */; };
 		48FAD2C51C9839A900F57776 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FAD2C41C9839A900F57776 /* DataManager.swift */; };
 /* End PBXBuildFile section */
@@ -53,6 +56,9 @@
 		4840C9F71C96F40C00140354 /* sync_ios_appUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sync_ios_appUITests.swift; sourceTree = "<group>"; };
 		4840C9F91C96F40C00140354 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		485B22B31C9964CF00738FC2 /* DetailledViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailledViewController.swift; sourceTree = "<group>"; };
+		48D808181C9AA644001D51FE /* ShoppingItem.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShoppingItem.xcdatamodel; sourceTree = "<group>"; };
+		48D8081A1C9AA9C4001D51FE /* ShoppingItem+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ShoppingItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		48D8081B1C9AA9C4001D51FE /* ShoppingItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShoppingItem.swift; sourceTree = "<group>"; };
 		48EB8A0E1C994A1D00B1C414 /* fhconfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = fhconfig.plist; sourceTree = "<group>"; };
 		48FAD2C41C9839A900F57776 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		59DB04A5DA1239D0CA8A30F6 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -111,6 +117,9 @@
 			isa = PBXGroup;
 			children = (
 				4840C9D71C96F40C00140354 /* AppDelegate.swift */,
+				48D808171C9AA644001D51FE /* ShoppingItem.xcdatamodeld */,
+				48D8081A1C9AA9C4001D51FE /* ShoppingItem+CoreDataProperties.swift */,
+				48D8081B1C9AA9C4001D51FE /* ShoppingItem.swift */,
 				48FAD2C41C9839A900F57776 /* DataManager.swift */,
 				4840C9D91C96F40C00140354 /* RootViewController.swift */,
 				485B22B31C9964CF00738FC2 /* DetailledViewController.swift */,
@@ -341,9 +350,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48D808191C9AA644001D51FE /* ShoppingItem.xcdatamodeld in Sources */,
 				4840C9DA1C96F40C00140354 /* RootViewController.swift in Sources */,
 				48FAD2C51C9839A900F57776 /* DataManager.swift in Sources */,
 				4840C9D81C96F40C00140354 /* AppDelegate.swift in Sources */,
+				48D8081D1C9AA9C4001D51FE /* ShoppingItem.swift in Sources */,
+				48D8081C1C9AA9C4001D51FE /* ShoppingItem+CoreDataProperties.swift in Sources */,
 				485B22B41C9964CF00738FC2 /* DetailledViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -599,6 +611,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		48D808171C9AA644001D51FE /* ShoppingItem.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				48D808181C9AA644001D51FE /* ShoppingItem.xcdatamodel */,
+			);
+			currentVersion = 48D808181C9AA644001D51FE /* ShoppingItem.xcdatamodel */;
+			path = ShoppingItem.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 4840C9CC1C96F40C00140354 /* Project object */;
 }

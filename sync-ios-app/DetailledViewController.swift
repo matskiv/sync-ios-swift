@@ -26,19 +26,24 @@ public class DetailledViewController: UIViewController {
     @IBOutlet weak var createdLabel: UILabel!
     
     public var isUpdate: Bool {
-        if let uid = item["uid"], let uidString = uid as? String where uidString != "" {
-            print("UID \(uidString)")
+        if let uid = item.uid where uid != "" {
+            print("UID \(uid)")
             return true
         }
         return false
     }
     public override func viewDidLoad() {
         if let item = item {
-            self.nameTextField.text = item["name"] as? String
+            self.nameTextField.text = item.name
             if isUpdate { // update
                 self.createdLabel.hidden = false
                 self.createdTextField.hidden = false
-                //self.createdTextField.text = [dateFormatter stringFromDate:_item.created];
+                if let created = item.created {
+                    let formatter = NSDateFormatter()
+                    formatter.dateStyle = NSDateFormatterStyle.LongStyle
+                    formatter.timeStyle = .MediumStyle
+                    self.createdTextField.text = formatter.stringFromDate(created)
+                }
             } else { // create
                 self.createdLabel.hidden = true
                 self.createdTextField.hidden = true
@@ -48,7 +53,8 @@ public class DetailledViewController: UIViewController {
     }
     @IBAction func saveItem(sender: AnyObject) {
         if let name = self.nameTextField.text where name != "" {
-            item["name"] = name
+            item.name = name
+            item.created = NSDate()
             isUpdate ? dataManager.updateItem(item) : dataManager.createItem(item)
         } else {
             displayError("Name is required")

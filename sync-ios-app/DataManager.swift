@@ -16,11 +16,14 @@
 
 import Foundation
 import FeedHenry
-public typealias ShoppingItem = [String: AnyObject]
+import CoreData
+
+public typealias ShoppingItem2 = [String: AnyObject]
 public let DATA_ID = "myShoppingList"
 
 public class DataManager: NSObject {
     public var syncClient: FHSyncClient!
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
     public func start() {
         let conf = FHSyncConfig()
@@ -35,19 +38,94 @@ public class DataManager: NSObject {
         conf.crashCountWait = 0;
         syncClient = FHSyncClient(config: conf)
         NSNotificationCenter.defaultCenter().addObserver(self, selector:Selector("onSyncMessage:"), name:"kFHSyncStateChangedNotification", object:nil)
-        //self.syncClient.manageWithDataId(DATA_ID, andConfig:nil, andQuery:[:])
-        print("Start:TODO")
+        syncClient.manageWithDataId(DATA_ID, andConfig:nil, andQuery:[:])
     }
     
     public func onSyncMessage(note: NSNotification) {
-        //let msg = note.object as? FHSyncNotificationMessage
-        //print("Got notification: \(msg)")
-        print("onSyncMessage::TODO")
+        if let msg = note.object as? FHSyncNotificationMessage, let code = msg.code {
+            print("Got notification: \(msg)")
+            if code == REMOTE_UPDATE_APPLIED_MESSAGE {
+                print("onSyncMessage::REMOTE_UPDATE_APPLIED_MESSAGE")
+                if  let obj = msg.message.objectFromJSONString() as? [String: AnyObject], let action = obj["action"] as? String where action == "create" {
+                    if let oldUid = obj["hash"] as? String,
+                        let newUid = obj["uid"] as? String,
+                        let item = findItemById(oldUid) {
+                            item.uid = newUid
+                    }
+                    if managedObjectContext.hasChanges {
+                        do {
+                        try managedObjectContext.save()
+                        } catch {
+                            print("Failed to save in CoreData")
+                        }
+                    }
+                }
+            } else if code == LOCAL_UPDATE_APPLIED_MESSAGE || (code == DELTA_RECEIVED_MESSAGE && msg.UID != nil) {
+                print("onSyncMessage::LOCAL_UPDATE_APPLIED_MESSAGE or DELTA_RECEIVED_MESSAGE")
+                if let action = msg.message, let uid = msg.UID {
+                    if action == "create" { // replace temporary id with the one assinged in cloud DB
+                        let data = syncClient.readWithDataId(DATA_ID, andUID: uid)
+                        let dataSource = data["data"]
+                        if let item = findItemById(uid) {
+                            if let dataSource = dataSource as? [String: AnyObject] {
+                                item.name = dataSource["name"] as? String
+                            }
+                        } else if let dataSource = dataSource as? [String: AnyObject]  {
+                            let newItem = NSEntityDescription.insertNewObjectForEntityForName("ShoppingItem", inManagedObjectContext: self.managedObjectContext) as! ShoppingItem
+                            newItem.uid = uid
+                            newItem.name = dataSource["name"] as? String
+                            let createDoubleValue = dataSource["created"] as? NSNumber
+                            if let doubleTime = createDoubleValue?.doubleValue {
+                                let date = NSDate(timeIntervalSince1970: doubleTime/1000)
+                                newItem.created = date
+                            }
+                        }
+                    } else if let item = findItemById(uid) where action == "update" {
+                        let data = syncClient.readWithDataId(DATA_ID, andUID: uid)
+                        if let dataSource = data["data"] as? [String: AnyObject] {
+                            item.name = dataSource["name"] as? String
+                        }
+                    } else if let item = findItemById(uid) where action == "delete" {
+                        self.managedObjectContext.deleteObject(item)
+                    }
+                }
+                if managedObjectContext.hasChanges {
+                    do {
+                        try managedObjectContext.save()
+                    } catch {
+                        print("Failed to save in CoreData")
+                    }
+                }
+            }
+        }
+        NSNotificationCenter.defaultCenter().postNotificationName("kAppDataUpdatedNotification", object: nil)
+    }
+    
+    public func findItemById(uid: String) -> ShoppingItem? {
+        let fetchRequest = NSFetchRequest(entityName: "ShoppingItem")
+        fetchRequest.predicate = NSPredicate(format: "uid == %@", argumentArray: [uid])
+        var fetchResults: [ShoppingItem]? = nil
+        do {
+            fetchResults = try managedObjectContext.executeFetchRequest(fetchRequest) as? [ShoppingItem]
+        } catch {
+            print("DataManager::findItemById::Error fetching list")
+        }
+        if let results = fetchResults where results.count == 1 {
+            return results[0]
+        }
+        return nil
     }
     
     public func listItems() -> [ShoppingItem]? {
-        print("listItems:TODO")
-        return nil
+        let fetchRequest = NSFetchRequest(entityName: "ShoppingItem")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "created", ascending: false)]
+        var fetchResults: [ShoppingItem]? = nil
+        do {
+          fetchResults = try managedObjectContext.executeFetchRequest(fetchRequest) as? [ShoppingItem]
+        } catch {
+            print("DataManager::listItems::Error fetching list")
+        }
+        return fetchResults
     }
     
     public func createItem(item: ShoppingItem) -> ShoppingItem {
@@ -66,7 +144,8 @@ public class DataManager: NSObject {
     }
     
     public func getItem() -> ShoppingItem {
-        print("getItem:TODO")
-        return [:]
+        let newItem = NSEntityDescription.insertNewObjectForEntityForName("ShoppingItem", inManagedObjectContext: self.managedObjectContext) as! ShoppingItem
+        newItem.created = NSDate()
+        return newItem
     }
 }

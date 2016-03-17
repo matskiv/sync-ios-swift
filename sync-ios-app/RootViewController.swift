@@ -23,13 +23,10 @@ public class RootViewController: UITableViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        //self.editButtonItem().enabled = false;
-        // TODO remove once CoreData code is sone
-        self.items = [["name":"item1", "uid":"1"], ["name":"item2", "uid":"2"]]
         
         // TODO once Swift2.2 is released change selector
         //let sel = #selector(RootViewController.onDataUpdated(_))
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onDataUpdated:"), name: "kAppDataUpdatedNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onDataUpdated:"), name: "kAppDataUpdatedNotification", object: nil)
     }
     
     override public func didReceiveMemoryWarning() {
@@ -37,10 +34,11 @@ public class RootViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-//    public func onDataUpdated(note: NSNotification) {
-//        self.items = dataManager.listItems()
-//        self.tableView.reloadData()
-//    }
+    public func onDataUpdated(note: NSNotification) {
+        print("::onDataUpdated::refresh tableview")
+        items = dataManager.listItems()
+        tableView.reloadData()
+    }
 }
 
 // MARK: UITableViewDataSource, UITableViewDelegate
@@ -50,17 +48,21 @@ extension RootViewController {
     }
     
     public override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.items.count
+        return self.items?.count ?? 0
     }
     
     public override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
         let item = self.items[indexPath.row]
-        if let itemName = item["name"] as? String {
-            print("NAME \(itemName)")
+        if let itemName = item.name {
             cell?.textLabel?.text = itemName
         }
-        //cell?.detailTextLabel!.text = item["name"] as? String //TODO format time
+        if let itemDate = item.created {
+            let formatter = NSDateFormatter()
+            formatter.dateStyle = NSDateFormatterStyle.LongStyle
+            formatter.timeStyle = .MediumStyle
+            cell?.detailTextLabel!.text = formatter.stringFromDate(itemDate)
+        }
         return cell!
     }
     public override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -74,7 +76,6 @@ extension RootViewController {
 // MARK: Segue
 extension RootViewController {
     public override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print("SEGUE: \(segue.identifier)")
         if let identifier = segue.identifier where identifier == "showExistingItemDetails" {
             if let sender = sender as? UITableViewCell,
                 cell = tableView.indexPathForCell(sender) {
@@ -84,8 +85,8 @@ extension RootViewController {
             }
         } else if let identifier = segue.identifier where identifier == "showNewItemDetails" {
             let dest = segue.destinationViewController as? DetailledViewController
-            dest?.item = ["name": ""]
-            dest?.dataManager = dataManager // todo dataManager.getItem()
+            dest?.item = dataManager.getItem()
+            dest?.dataManager = dataManager
         }
     }
 }
