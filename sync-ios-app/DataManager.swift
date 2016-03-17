@@ -18,12 +18,11 @@ import Foundation
 import FeedHenry
 import CoreData
 
-public typealias ShoppingItem2 = [String: AnyObject]
 public let DATA_ID = "myShoppingList"
 
 public class DataManager: NSObject {
     public var syncClient: FHSyncClient!
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    public let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
     public func start() {
         let conf = FHSyncConfig()
@@ -54,7 +53,7 @@ public class DataManager: NSObject {
                     }
                     if managedObjectContext.hasChanges {
                         do {
-                        try managedObjectContext.save()
+                            try managedObjectContext.save()
                         } catch {
                             print("Failed to save in CoreData")
                         }
@@ -71,14 +70,16 @@ public class DataManager: NSObject {
                                 item.name = dataSource["name"] as? String
                             }
                         } else if let dataSource = dataSource as? [String: AnyObject]  {
-                            let newItem = NSEntityDescription.insertNewObjectForEntityForName("ShoppingItem", inManagedObjectContext: self.managedObjectContext) as! ShoppingItem
-                            newItem.uid = uid
-                            newItem.name = dataSource["name"] as? String
-                            let createDoubleValue = dataSource["created"] as? NSNumber
-                            if let doubleTime = createDoubleValue?.doubleValue {
-                                let date = NSDate(timeIntervalSince1970: doubleTime/1000)
-                                newItem.created = date
-                            }
+                            //if findItemById(uid) == nil {
+                                let newItem = NSEntityDescription.insertNewObjectForEntityForName("ShoppingItem", inManagedObjectContext: self.managedObjectContext) as! ShoppingItem
+                                newItem.uid = uid
+                                newItem.name = dataSource["name"] as? String
+                                let createDoubleValue = dataSource["created"] as? NSNumber
+                                if let doubleTime = createDoubleValue?.doubleValue {
+                                    let date = NSDate(timeIntervalSince1970: doubleTime/1000)
+                                    newItem.created = date
+                                }
+                            //}
                         }
                     } else if let item = findItemById(uid) where action == "update" {
                         let data = syncClient.readWithDataId(DATA_ID, andUID: uid)
@@ -121,31 +122,37 @@ public class DataManager: NSObject {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "created", ascending: false)]
         var fetchResults: [ShoppingItem]? = nil
         do {
-          fetchResults = try managedObjectContext.executeFetchRequest(fetchRequest) as? [ShoppingItem]
+            fetchResults = try managedObjectContext.executeFetchRequest(fetchRequest) as? [ShoppingItem]
         } catch {
             print("DataManager::listItems::Error fetching list")
         }
         return fetchResults
     }
     
-    public func createItem(item: ShoppingItem) -> ShoppingItem {
-        print("createItem:TODO")
-        return item
+    public func createItem(item: ShoppingItem) {
+        if let name = item.name, let created = item.created?.timeIntervalSince1970 {
+            let myItem: [String: AnyObject] = ["name": name, "created": created*1000]
+            managedObjectContext.deleteObject(item) // Remove the temporary coredata item for crete action
+            syncClient.createWithDataId(DATA_ID, andData: myItem)
+        }
     }
     
-    public func updateItem(item: ShoppingItem) -> ShoppingItem {
-        print("updateItem:TODO")
-        return item
+    public func updateItem(item: ShoppingItem) {
+        if let uid = item.uid, let name = item.name, let created = item.created?.timeIntervalSince1970 {
+            let myItem: [String: AnyObject] = ["name": name, "created": created*1000]
+            syncClient.updateWithDataId(DATA_ID, andUID: uid, andData: myItem)
+        }
     }
     
-    public func deleteItem(item: ShoppingItem) -> ShoppingItem {
-        print("deleteItem")
-        return item
+    public func deleteItem(item: ShoppingItem) {
+        if let uid = item.uid {
+            syncClient.deleteWithDataId(DATA_ID, andUID: uid)
+        }
     }
     
-    public func getItem() -> ShoppingItem {
-        let newItem = NSEntityDescription.insertNewObjectForEntityForName("ShoppingItem", inManagedObjectContext: self.managedObjectContext) as! ShoppingItem
-        newItem.created = NSDate()
+    public func getItem() -> ShoppingItem { // create a temporary coredata item to be created
+        let entity = NSEntityDescription.entityForName("ShoppingItem", inManagedObjectContext: managedObjectContext)
+        let newItem = ShoppingItem(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
         return newItem
     }
 }

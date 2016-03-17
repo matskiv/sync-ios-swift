@@ -37,6 +37,7 @@ public class RootViewController: UITableViewController {
     public func onDataUpdated(note: NSNotification) {
         print("::onDataUpdated::refresh tableview")
         items = dataManager.listItems()
+
         tableView.reloadData()
     }
 }
@@ -55,7 +56,11 @@ extension RootViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
         let item = self.items[indexPath.row]
         if let itemName = item.name {
-            cell?.textLabel?.text = itemName
+            if let uid = item.uid {
+                cell?.textLabel?.text = "\(itemName)::\(uid)"
+            } else {
+                cell?.textLabel?.text = "\(itemName)::nil"
+            }
         }
         if let itemDate = item.created {
             let formatter = NSDateFormatter()
@@ -85,7 +90,7 @@ extension RootViewController {
             }
         } else if let identifier = segue.identifier where identifier == "showNewItemDetails" {
             let dest = segue.destinationViewController as? DetailledViewController
-            dest?.item = dataManager.getItem()
+            //dest?.item = dataManager.getItem()
             dest?.dataManager = dataManager
         }
     }
