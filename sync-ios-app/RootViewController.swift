@@ -56,11 +56,7 @@ extension RootViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
         let item = self.items[indexPath.row]
         if let itemName = item.name {
-            if let uid = item.uid {
-                cell?.textLabel?.text = "\(itemName)::\(uid)"
-            } else {
-                cell?.textLabel?.text = "\(itemName)::nil"
-            }
+            cell?.textLabel?.text = "\(itemName)"
         }
         if let itemDate = item.created {
             let formatter = NSDateFormatter()
