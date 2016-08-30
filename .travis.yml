@@ -4,9 +4,6 @@ xcode_workspace: sync-ios-app.xcworkspace
 xcode_scheme: sync-ios-app
 xcode_sdk: iphonesimulator
 
-before_install:
-    - gem install cocoapods -N --no-rdoc --no-ri --no-document --quiet
-
 notifications:
   irc: "irc.freenode.org#feedhenry"
 
