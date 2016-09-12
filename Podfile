@@ -1,8 +1,10 @@
 
 source 'https://github.com/CocoaPods/Specs.git'
 
-xcodeproj 'sync-ios-app.xcodeproj'
+project 'sync-ios-app.xcodeproj'
 platform :ios, '8.0'
 use_frameworks!
 
-pod 'FeedHenry', '~> 4.1.1'
+target 'sync-ios-app' do
+	pod 'FeedHenry', '~> 4.1.1'
+end
