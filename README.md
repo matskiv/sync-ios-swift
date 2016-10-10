@@ -30,14 +30,10 @@ If you wish to contribute to this template, the following information may be hel
 ## Build instructions
 
 1. Clone this project
-
-2. Populate ```sync-ios-app/fhconfig.plist``` with your values as explained [here](http://docs.feedhenry.com/v3/dev_tools/sdks/ios.html#ios-configure).
-
-3. Run ```pod install``` 
-
-4. Open sync-ios-app.xcworkspace
-
-5. Run the project
+1. Populate ```sync-ios-app/fhconfig.plist``` with your values as explained [here](http://docs.feedhenry.com/v3/dev_tools/sdks/ios.html#ios-configure).
+1. Run ```pod install``` 
+1. Open sync-ios-app.xcworkspace
+1. Run the project
  
 ## How does it work?
 
