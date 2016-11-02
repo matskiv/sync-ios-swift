@@ -36,7 +36,7 @@ public class DataManager: NSObject {
         conf.notifyDeltaReceived = true
         conf.crashCountWait = 0;
         syncClient = FHSyncClient(config: conf)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:Selector("onSyncMessage:"), name:"kFHSyncStateChangedNotification", object:nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector:#selector(DataManager.onSyncMessage(_:)), name:"kFHSyncStateChangedNotification", object:nil)
         syncClient.manageWithDataId(DATA_ID, andConfig:nil, andQuery:[:])
     }
     
