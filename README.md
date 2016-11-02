@@ -4,13 +4,13 @@
 
 Author: Corinne Krych   
 Level: Intermediate  
-Technologies: Swift, iOS, RHMAP, CocoaPods. 
+Technologies: Swift 2.3, iOS, RHMAP, CocoaPods. 
 Summary: A demonstration of how to synchronize a single collection with RHMAP. 
 Community Project : [Feed Henry](http://feedhenry.org) 
 Target Product: RHMAP  
 Product Versions: RHMAP 3.7.0+   
 Source: https://github.com/feedhenry-templates/sync-ios-app  
-Prerequisites: fh-ios-sdk : 3.+, Xcode : 7.2+, iOS SDK : iOS7+, CocoaPods: 1.0.1+
+Prerequisites: fh-ios-swift-sdk : 4.2+, Xcode : 8+, iOS SDK : iOS8+, CocoaPods: 1.0.1+
 
 ## What is it?
 
