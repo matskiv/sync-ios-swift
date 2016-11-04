@@ -26,7 +26,7 @@ public class RootViewController: UITableViewController {
         
         // TODO once Swift2.2 is released change selector
         //let sel = #selector(RootViewController.onDataUpdated(_))
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onDataUpdated:"), name: "kAppDataUpdatedNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootViewController.onDataUpdated(_:)), name: "kAppDataUpdatedNotification", object: nil)
     }
     
     override public func didReceiveMemoryWarning() {

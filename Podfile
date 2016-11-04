@@ -6,5 +6,5 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'sync-ios-app' do
-	pod 'FeedHenry', '~> 4.1.1'
+	pod 'FeedHenry', '4.2.0'
 end
