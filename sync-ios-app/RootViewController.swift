@@ -17,24 +17,24 @@
 import UIKit
 import FeedHenry
 
-public class RootViewController: UITableViewController {
-    public var items: [ShoppingItem]!
-    public var dataManager: DataManager!
+open class RootViewController: UITableViewController {
+    open var items: [ShoppingItem]!
+    open var dataManager: DataManager!
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         
         // TODO once Swift2.2 is released change selector
         //let sel = #selector(RootViewController.onDataUpdated(_))
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(RootViewController.onDataUpdated(_:)), name: "kAppDataUpdatedNotification", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RootViewController.onDataUpdated(_:)), name: NSNotification.Name(rawValue: "kAppDataUpdatedNotification"), object: nil)
     }
     
-    override public func didReceiveMemoryWarning() {
+    override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    public func onDataUpdated(note: NSNotification) {
+    open func onDataUpdated(_ note: Notification) {
         print("::onDataUpdated::refresh tableview")
         items = dataManager.listItems()
 
@@ -44,30 +44,30 @@ public class RootViewController: UITableViewController {
 
 // MARK: UITableViewDataSource, UITableViewDelegate
 extension RootViewController {
-    public override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    open override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    public override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    open override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.items?.count ?? 0
     }
     
-    public override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
+    open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
         let item = self.items[indexPath.row]
         if let itemName = item.name {
             cell?.textLabel?.text = "\(itemName)"
         }
         if let itemDate = item.created {
-            let formatter = NSDateFormatter()
-            formatter.dateStyle = NSDateFormatterStyle.LongStyle
-            formatter.timeStyle = .MediumStyle
-            cell?.detailTextLabel!.text = formatter.stringFromDate(itemDate)
+            let formatter = DateFormatter()
+            formatter.dateStyle = DateFormatter.Style.long
+            formatter.timeStyle = .medium
+            cell?.detailTextLabel!.text = formatter.string(from: itemDate as Date)
         }
         return cell!
     }
-    public override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (editingStyle == .Delete) {
+    open override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
             dataManager.deleteItem(items[indexPath.row])
             tableView.reloadData()
         }
@@ -76,16 +76,16 @@ extension RootViewController {
 
 // MARK: Segue
 extension RootViewController {
-    public override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let identifier = segue.identifier where identifier == "showExistingItemDetails" {
+    open override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let identifier = segue.identifier, identifier == "showExistingItemDetails" {
             if let sender = sender as? UITableViewCell,
-                cell = tableView.indexPathForCell(sender) {
-                let dest = segue.destinationViewController as? DetailledViewController
+                let cell = tableView.indexPath(for: sender) {
+                let dest = segue.destination as? DetailledViewController
                 dest?.item = items[cell.row]
                 dest?.dataManager = dataManager
             }
-        } else if let identifier = segue.identifier where identifier == "showNewItemDetails" {
-            let dest = segue.destinationViewController as? DetailledViewController
+        } else if let identifier = segue.identifier, identifier == "showNewItemDetails" {
+            let dest = segue.destination as? DetailledViewController
             //dest?.item = dataManager.getItem()
             dest?.dataManager = dataManager
         }

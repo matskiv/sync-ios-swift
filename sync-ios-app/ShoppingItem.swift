@@ -18,7 +18,7 @@ import Foundation
 import CoreData
 
 
-public class ShoppingItem: NSManagedObject {
+open class ShoppingItem: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 
