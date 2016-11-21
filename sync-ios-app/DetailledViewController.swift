@@ -17,7 +17,7 @@
 import UIKit
 import FeedHenry
 
-public class DetailledViewController: UIViewController {
+open class DetailledViewController: UIViewController {
     var item: ShoppingItem!
     var action: String!
     var dataManager: DataManager!
@@ -32,35 +32,35 @@ public class DetailledViewController: UIViewController {
 //        }
 //        return false
 //    }
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         if let item = item {
             self.nameTextField.text = item.name
-            self.createdLabel.hidden = false
-            self.createdTextField.hidden = false
+            self.createdLabel.isHidden = false
+            self.createdTextField.isHidden = false
             if let created = item.created {
-                let formatter = NSDateFormatter()
-                formatter.dateStyle = NSDateFormatterStyle.LongStyle
-                formatter.timeStyle = .MediumStyle
-                self.createdTextField.text = formatter.stringFromDate(created)
+                let formatter = DateFormatter()
+                formatter.dateStyle = DateFormatter.Style.long
+                formatter.timeStyle = .medium
+                self.createdTextField.text = formatter.string(from: created as Date)
             }
             
         } else {// create
-            self.createdLabel.hidden = true
-            self.createdTextField.hidden = true
+            self.createdLabel.isHidden = true
+            self.createdTextField.isHidden = true
         }
     }
     
-    @IBAction func saveItem(sender: AnyObject) {
-        if let name = self.nameTextField.text where name != "" {
+    @IBAction func saveItem(_ sender: AnyObject) {
+        if let name = self.nameTextField.text, name != "" {
             if let item = item {
                 item.name = name
-                item.created = NSDate()
+                item.created = Date()
                 dataManager.updateItem(item)
                 print("HIT CREATE > UPDATE BUTTON:: \(item)")
             } else {
                 item = dataManager.getItem()
                 item.name = name
-                item.created = NSDate()
+                item.created = Date()
                 dataManager.createItem(item)
                 
                 print("HIT CREATE > SAVE BUTTON:: \(item)")
@@ -68,20 +68,20 @@ public class DetailledViewController: UIViewController {
         } else {
             displayError("Name is required")
         }
-        let parent = self.parentViewController as? UINavigationController
-        parent?.popViewControllerAnimated(true)
+        let parent = self.parent as! UINavigationController
+        parent.popViewController(animated: true)
     }
     
-    @IBAction func cancel(sender: AnyObject) {
-        if let parent = self.parentViewController as? UINavigationController {
-            parent.popViewControllerAnimated(true)
+    @IBAction func cancel(_ sender: AnyObject) {
+        if let parent = self.parent as? UINavigationController {
+            parent.popViewController(animated: true)
         }
     }
     
-    func displayError(error: String) {
-        let alert = UIAlertController(title: error, message: nil, preferredStyle: .Alert)
-        let okAction = UIAlertAction(title: "OK", style: .Default, handler: nil)
+    func displayError(_ error: String) {
+        let alert = UIAlertController(title: error, message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alert.addAction(okAction)
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
 }
