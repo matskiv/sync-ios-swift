@@ -49,7 +49,7 @@ In ```sync-ios-app/DataManager.swift``` the synchronization loop is started.
     syncClient = FHSyncClient(config: conf) // [1]
     NotificationCenter.default.addObserver(self,
             selector:#selector(DataManager.onSyncMessage(_:)),
-            name:NSNotification.Name(rawValue: "kFHSyncStateChangedNotification"),
+            name:Notification.Name(rawValue: "kFHSyncStateChangedNotification"),
             object:nil) // [2]
     syncClient.manage(withDataId: DATA_ID, andConfig:nil, andQuery:[:]) // [3]
 ```
@@ -63,7 +63,7 @@ In ```sync-ios-app/DataManager.swift``` the synchronization loop is started.
 In ```sync-ios-app/DataManager.swift``` the method ```onSyncMessage``` is your callback method on sync events.
 
 ```
-public func onSyncMessage(note: NSNotification) {
+public func onSyncMessage(_ note: Notification) {
     if let msg = note.object as? FHSyncNotificationMessage, let code = msg.code {
         print("Got notification: \(msg)")
         if code == REMOTE_UPDATE_APPLIED_MESSAGE { 
