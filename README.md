@@ -4,13 +4,13 @@
 
 Author: Corinne Krych   
 Level: Intermediate  
-Technologies: Swift, iOS, RHMAP, CocoaPods. 
+Technologies: Swift 3, iOS, RHMAP, CocoaPods. 
 Summary: A demonstration of how to synchronize a single collection with RHMAP. 
 Community Project : [Feed Henry](http://feedhenry.org) 
 Target Product: RHMAP  
 Product Versions: RHMAP 3.7.0+   
 Source: https://github.com/feedhenry-templates/sync-ios-app  
-Prerequisites: fh-ios-sdk : 3.+, Xcode : 7.2+, iOS SDK : iOS7+, CocoaPods: 1.0.1+
+Prerequisites: fh-ios-swift-sdk : 5+, Xcode : 8+, iOS SDK : iOS8+, CocoaPods: 1.1.0+
 
 ## What is it?
 
@@ -46,11 +46,12 @@ In ```sync-ios-app/DataManager.swift``` the synchronization loop is started.
     conf.notifySyncStarted = true
     conf.notifySyncCompleted = true
     ...
-    let syncClient = FHSyncClient(config: conf) // [1]
-    NSNotificationCenter.defaultCenter().addObserver(self, 
-             selector:Selector("onSyncMessage:"), name:"kFHSyncStateChangedNotification", 
-             object:nil) // [2]
-    syncClient.manageWithDataId(DATA_ID, andConfig:nil, andQuery:[:]) // [3]
+    syncClient = FHSyncClient(config: conf) // [1]
+    NotificationCenter.default.addObserver(self,
+            selector:#selector(DataManager.onSyncMessage(_:)),
+            name:Notification.Name(rawValue: "kFHSyncStateChangedNotification"),
+            object:nil) // [2]
+    syncClient.manage(withDataId: DATA_ID, andConfig:nil, andQuery:[:]) // [3]
 ```
 [1] Initialize with sync configuration.
 
@@ -62,9 +63,8 @@ In ```sync-ios-app/DataManager.swift``` the synchronization loop is started.
 In ```sync-ios-app/DataManager.swift``` the method ```onSyncMessage``` is your callback method on sync events.
 
 ```
-public func onSyncMessage(note: NSNotification) {
-    if let msg = note.object as? FHSyncNotificationMessage, 
-       let code = msg.code {
+public func onSyncMessage(_ note: Notification) {
+    if let msg = note.object as? FHSyncNotificationMessage, let code = msg.code {
         print("Got notification: \(msg)")
         if code == REMOTE_UPDATE_APPLIED_MESSAGE { 
             // Add UI / business code
