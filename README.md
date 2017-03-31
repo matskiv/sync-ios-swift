@@ -14,7 +14,7 @@ Prerequisites: fh-ios-swift-sdk : 5+, Xcode : 8+, iOS SDK : iOS8+, CocoaPods: 1.
 
 ## What is it?
 
-This application manages items in a collection that is synchronized with a remote RHMAP cloud application.  The user can create, update, and delete collection items.  Refer to [sync-ios-app/fhconfig.plist](sync-ios-app/fhconfig.plist) for the delevant pieces of code and configuraiton.
+This application manages items in a collection that is synchronized with a remote RHMAP cloud application.  The user can create, update, and delete collection items.  Refer to `sync-ios-app/fhconfig.plist` for the delevant pieces of code and configuraiton.
 
 If you do not have access to a RHMAP instance, you can sign up for a free instance at [https://openshift.feedhenry.com/](https://openshift.feedhenry.com/).
 
