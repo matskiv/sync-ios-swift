@@ -1,4 +1,5 @@
-# sync-ios-swift [![Build Status](https://travis-ci.org/feedhenry-templates/sync-ios-swift.png)](https://travis-ci.org/feedhenry-templates/sync-ios-swift)
+# sync-ios-swift
+[![Build Status](https://travis-ci.org/feedhenry-templates/sync-ios-swift.png)](https://travis-ci.org/feedhenry-templates/sync-ios-swift)
 
 > ObjC version is available [here](https://github.com/feedhenry-templates/sync-ios-app).
 
