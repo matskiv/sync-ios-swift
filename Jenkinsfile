@@ -1,13 +1,10 @@
 node('ios') {
-    stage 'Checkout' {
-        checkout scm
-    }
+    stage 'Checkout'
+    checkout scm
 
-    stage 'Build' {
-        sh "ls && echo 'Dummy Jenkinsfile'"
-    }
+    stage 'Build'
+    sh "ls && echo 'Dummy Jenkinsfile'"
 
-    stage 'Archive' {
-        archiveArtifacts artifacts: 'Podfile'
-    }
+    stage 'Archive'
+    archiveArtifacts artifacts: 'Podfile'
 }
